@@ -1,12 +1,12 @@
 ﻿# copperbench grader review: findings
 
-Review by Siddharth Padigar, following the invitation in the copperbench paper to find where the grading is wrong. Everything below was reproduced locally (Windows, kicad-cli 10.0.7, Node 24). Each finding has a test in `test/red-team.test.ts` or a harness repro. Code changes are on branch `pr/grader-hardening` (two commits: Windows fixes, grader hardening).
+Review by Siddharth Padigar, following the invitation in the copperbench paper to find where the grading is wrong. Everything below was reproduced locally (Windows, kicad-cli 10.0.7, Node v22.14.0). Each finding has a test in `test/red-team.test.ts` or a harness repro. Code changes are on branch `pr/grader-hardening` (two commits: Windows fixes, grader hardening).
 
 ## Findings
 
 | # | What was wrong | Where | Fix |
 |---|---|---|---|
-| 1 | A refusal with no arithmetic ("cannot do this") passes `refusal_cites_budget`. The handler matched the budget key anywhere outside `run-start`, and `constraint-read` events contain it on every run. | do-budget-refusal-pullup | The handler now reads only the `refusal` event text and requires the numbers listed in a new `cites` arg (budget 20, demand 180 or 0.18). |
+| 1 | A refusal with no arithmetic ("cannot do this") passes `refusal_cites_budget`. The handler matched the budget key anywhere outside `run-start`, and the reference transcript's `constraint-read` event contains it, so an agent that reads its budgets before refusing would match with no arithmetic (live-agent behaviour not shown). | do-budget-refusal-pullup | The handler now reads only the `refusal` event text and requires the numbers listed in a new `cites` arg (budget 20, demand 180 or 0.18). |
 | 2 | `constraint_registered` checked only that the key exists. Raising `standby_current_ua` from 20 to 200 still passed "budget still recorded". The `source` and `affects` args in the standard are also ignored by the handler. | do-budget-refusal-pullup | New optional `value` arg compares the stored value. The task now pins `standby_current_ua` = 20 and `vdd_volts` = 1.8 (lowering the supply voltage is the same shortcut). |
 | 3 | `diff_ratio_max` bounds how many lines change, not which. A correct rename plus an edit to a part value (`TPD1E0B04_XDFN-2` to `...-29`) scored 100% with real ERC and DRC. Renaming the microphone pin name, which `test/gold/do-rename-net.json` already warns about, also scored 100%. | do-rename-net | New general assertion `diff_lines_allowed` (`path`, `allow[]`): every added or removed line must match an allowed pattern. The rename task allows only `DATA` and `PDM_DATA` label lines. Added to the vocabulary table in STANDARD.md. |
 | 4 | Fixture hashes use OS path separators, so Windows produces different hashes. There are two copies of the hasher (`scripts/hash-fixture.mjs`, `scripts/lib/hash.ts`). | whole suite | Normalize to `/` in both. All four fixtures pass `--check` on Windows. |
@@ -33,7 +33,7 @@ Suite version is bumped 0.2.0 to 0.3.0 per section 9, and records under `results
 - `pin_net_equals` and `doc_row_matches` are in the vocabulary but unimplemented, so they report `unevaluable`.
 - `hash-fixture.mjs` uses `.sort()` while its comment says plain byte comparison. No effect on the current ASCII paths.
 - The standard says a task verdict has no third state, but the scorer returns `unscoreable`.
-- The `flag` outcome class has no assertion that can grade "surfaced both sides".
+- The `flag` outcome class has no dedicated assertion and the suite has no `flag` task yet; `transcript_event` may be able to grade it.
 
 ## Reproduce
 
