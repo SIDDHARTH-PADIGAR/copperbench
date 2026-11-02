@@ -41,3 +41,5 @@ npm run dev -- --repo "$FIX" do "rename net DATA to PDM_DATA"
 ```
 
 The runner does the same in a temporary sandbox, three times per model, with the response cache off.
+
+**Collateral edits.** `surgical-schematic-edit` bounds how many lines change, not which. `only-the-net-labels-changed` closes that: every changed line in the schematic must be a `DATA` or `PDM_DATA` label. A run that also renames the microphone pin name, or edits an unrelated part value, stays under the line bound and still fails here.

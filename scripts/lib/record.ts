@@ -24,7 +24,7 @@ export const SCHEMA_VERSION = '1.0.0';
 // kicad-cli 10.0.6. Editing a fixture manifest is a suite-version event
 // (STANDARD.md section 9), so records written before the bump segregate from
 // records written after rather than averaging into a shared row.
-export const SUITE_VERSION = '0.2.0';
+export const SUITE_VERSION = '0.3.0';
 
 export interface RecordInput {
   taskId: string;

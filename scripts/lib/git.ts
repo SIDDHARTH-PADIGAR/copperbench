@@ -79,3 +79,23 @@ export function baselineLineCount(cwd: string, sha: string, filePath: string): n
     return 0;
   }
 }
+
+/**
+ * The text of every line the run added or removed in one file, without the
+ * +/- marker. A line count says how much changed; this says what changed.
+ */
+export function changedLineTextsFor(cwd: string, sha: string, filePath: string): string[] {
+  const untracked = gitCapture(cwd, ['ls-files', '--others', '--exclude-standard', '--', filePath]).trim();
+  if (untracked !== '') {
+    return readFileSync(path.join(cwd, filePath), 'utf8').split('\n').filter((l) => l !== '');
+  }
+  const out = gitCapture(cwd, ['diff', '-U0', '--no-color', '--no-ext-diff', sha, '--', filePath]);
+  const lines: string[] = [];
+  let inHunk = false;
+  for (const raw of out.split('\n')) {
+    if (raw.startsWith('@@')) { inHunk = true; continue; }
+    if (!inHunk) continue;
+    if (raw.startsWith('+') || raw.startsWith('-')) lines.push(raw.slice(1).replace(/\r$/, ''));
+  }
+  return lines;
+}

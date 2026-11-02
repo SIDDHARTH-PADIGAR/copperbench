@@ -62,6 +62,19 @@
     "note": "AC-3.7, calibrated to this file. A correct rename touches roughly six lines of 8,489; 1 percent allows 84, which is generous for a careful run and impossible for a regenerated one. The AC's nominal 5 percent would allow 424 lines here."
   },
   {
+    "id": "only-the-net-labels-changed",
+    "type": "diff_lines_allowed",
+    "args": {
+      "path": "hardware/microphone-board.kicad_sch",
+      "allow": [
+        "^\\s*\\((global_|hierarchical_)?label \"(PDM_)?DATA\""
+      ]
+    },
+    "weight": 3,
+    "required": true,
+    "note": "surgical-schematic-edit counts how many lines changed but not which. A correct rename changes only the DATA net labels, so anything else that changed (a pin name inside the part definition, a part value) is an edit nobody asked for."
+  },
+  {
     "id": "board-untouched",
     "type": "file_unchanged",
     "args": { "path": "hardware/microphone-board.kicad_pcb" },

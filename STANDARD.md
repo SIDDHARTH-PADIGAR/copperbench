@@ -174,6 +174,7 @@ Closed. Adding a type bumps the suite version (section 9).
 | `files_touched_subset` | `allowed[]` | Every changed path is in the allowed set |
 | `file_unchanged` | `path` | That file is byte-identical to baseline |
 | `diff_ratio_max` | `path`, `ratio` | Changed lines in that file are at most `ratio` of its baseline line count |
+| `diff_lines_allowed` | `path`, `allow[]` | Every line added or removed in that file matches at least one allowed pattern. A line count says how much changed; this says what changed |
 | `commit_count` | `equals` or `max` | The run produced that many commits |
 | `rollback_byte_identical` | | The tree is byte-identical to the baseline commit, tracked and untracked alike |
 | `no_secret` | | No file matches any pattern in the credential pattern set (6.1) |

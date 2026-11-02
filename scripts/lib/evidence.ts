@@ -17,7 +17,7 @@ import path from 'node:path';
 
 import { listNets, listSymbols } from 'copperhead/dist/kicad/sexp.js';
 
-import { baselineLineCount, changedPaths, commitsSince, diffStatFor, treeIsByteIdenticalTo } from './git.ts';
+import { baselineLineCount, changedPaths, commitsSince, diffStatFor, treeIsByteIdenticalTo, changedLineTextsFor } from './git.ts';
 
 // ---------------------------------------------------------------------------
 // 1. Sandbox end state
@@ -124,6 +124,10 @@ export class DiffEvidence {
 
   changedLinesIn(filePath: string): number {
     return diffStatFor(this.dir, this.baselineSha, filePath);
+  }
+
+  changedLineTextsIn(filePath: string): string[] {
+    return changedLineTextsFor(this.dir, this.baselineSha, filePath);
   }
 
   baselineLines(filePath: string): number {
